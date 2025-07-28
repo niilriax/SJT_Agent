@@ -1,0 +1,26 @@
+# ChatArena 项目核心依赖
+# 基础包
+chatarena
+
+# 主要依赖
+openai>=1.0.0
+gradio==3.34.0
+flask>=2.0.0
+
+# 核心工具库
+tenacity==8.2.2
+rich==13.3.3
+prompt_toolkit==3.0.38
+
+# 数据处理
+sentence_transformers>=2.0.0
+torch>=1.9.0
+
+# 数据库（可选）
+supabase==2.0.3
+
+# 环境变量管理
+python-dotenv>=0.19.0
+
+# 终端颜色支持（可选）
+colorama>=0.4.6 

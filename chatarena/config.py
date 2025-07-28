@@ -32,7 +32,7 @@ class Config(AttributedDict):
     @classmethod
     def load(cls, path: str):
         # load config from file
-        with open(path) as f:
+        with open(path, encoding='utf-8') as f:
             config = json.load(f)
         return cls(config)
 

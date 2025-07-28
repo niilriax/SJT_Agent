@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>SJT自动生成与反思演示</title>
+    <style>
+        body { font-family: "微软雅黑", Arial, sans-serif; margin: 40px; background: #f7f7f7; }
+        .container { background: #fff; padding: 30px; border-radius: 10px; max-width: 800px; margin: auto; box-shadow: 0 2px 8px #ccc; }
+        h2 { color: #2c3e50; }
+        textarea { width: 100%; height: 80px; font-size: 16px; }
+        .result { background: #f0f8ff; padding: 15px; border-radius: 6px; margin-top: 20px; }
+        .reflection-round { background: #f9f9f9; border-left: 4px solid #3498db; margin-top: 18px; padding: 15px 20px; border-radius: 6px; }
+        .reflection-title { font-weight: bold; color: #217dbb; }
+        .reflection-label { color: #555; font-weight: bold; }
+        label { font-weight: bold; }
+        .switch { display: inline-block; margin-left: 10px; }
+        .btn { background: #3498db; color: #fff; border: none; padding: 10px 30px; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        .btn:hover { background: #217dbb; }
+        pre { white-space: pre-wrap; word-break: break-all; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>SJT自动生成与反思演示</h2>
+    <form method="post">
+        <label>请输入自陈题目：</label><br>
+        <textarea name="self_report" required>{{ self_report }}</textarea><br><br>
+        <label>开启反思功能</label>
+        <input type="checkbox" name="reflection_on" class="switch" {% if reflection_on %}checked{% endif %}>
+        <br><br>
+        <button class="btn" type="submit">生成SJT题目</button>
+    </form>
+    {% if result %}
+        <div class="result">
+            <b>最终答案：</b><br>
+            <pre>{{ result }}</pre>
+        </div>
+    {% endif %}
+    {% if round_records and round_records|length > 0 %}
+        <h3 style="margin-top:30px;">多轮反思与修正过程：</h3>
+        {% for r in round_records %}
+        <div class="reflection-round">
+            <div class="reflection-title">第{{ r.round }}轮</div>
+            <div class="reflection-label">本轮答案：</div>
+            <pre>{{ r.answer }}</pre>
+            <div class="reflection-label">反思内容：</div>
+            <pre>{{ r.reflection }}</pre>
+            <div class="reflection-label">修正判断与理由：</div>
+            <pre>{{ r.judge }}</pre>
+            <div class="reflection-label">修正版答案：</div>
+            <pre>{{ r.revised_answer }}</pre>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+</body>
+</html> 

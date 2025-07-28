@@ -8,7 +8,7 @@ from .agent import Player
 from .backends import Human
 from .config import ArenaConfig
 from .environments import Environment, TimeStep, load_environment
-
+from .message import Message, MessagePool
 
 class TooManyInvalidActions(Exception):
     pass
@@ -28,7 +28,13 @@ class Arena:
         self.current_timestep = environment.reset()
         self.uuid = uuid.uuid4()  # Generate a unique id for the game
         self.invalid_actions_retry = 5
-
+        message = Message(agent_name="Moderator", content="SJT题目开始生成!", turn=-1, visible_to="None")
+        self.environment.message_pool.append_message_at_index(message, 0)
+        for player in players:
+            player_role_desc = player.role_desc
+            role_prompt = player_role_desc.split('\n')[0]
+            message = Message(agent_name="Moderator", content=role_prompt, turn=-1, visible_to=player.name, importance=5)
+            self.environment.message_pool.append_message_at_index(message, 1)
     @property
     def num_players(self):
         return self.environment.num_players
@@ -56,22 +62,18 @@ class Arena:
         )  # get the observation for the player
 
         timestep = None
-        for i in range(
-            self.invalid_actions_retry
-        ):  # try to take an action for a few times
-            action = player(observation)  # take an action
-            if self.environment.check_action(action, player_name):  # action is valid
-                timestep = self.environment.step(
-                    player_name, action
-                )  # update the environment
+        for i in range(self.invalid_actions_retry):  # try to take an action for a few times
+            action = player(observation, self.environment.message_pool, self.environment.question_pool)  # take an action
+            if self.environment.check_action(action, player_name):
+                timestep = self.environment.step(player_name, action)  # update the environment
                 break
-            else:  # action is invalid
+            else:
+                self.environment.message_pool._messages.pop()
+                self.environment.message_pool._messages.pop()
                 logging.warning(f"{player_name} made an invalid action {action}")
                 continue
 
-        if (
-            timestep is None
-        ):  # if the player made invalid actions for too many times, terminate the game
+        if timestep is None:  # if the player made invalid actions for too many times, terminate the game
             warning_msg = f"{player_name} has made invalid actions for {self.invalid_actions_retry} times. Terminating the game."
             logging.warning(warning_msg)
             raise TooManyInvalidActions(warning_msg)
@@ -99,13 +101,15 @@ class Arena:
             config = ArenaConfig.load(config)
 
         global_prompt = config.get("global_prompt", None)
-
+        request_msg = config.get("request_msg", None)
         # Create the players
         players = []
         for player_config in config.players:
             # Add public_prompt to the player config
             if global_prompt is not None:
                 player_config["global_prompt"] = global_prompt
+            if request_msg is not None:
+                player_config["request_msg"] = request_msg
 
             player = Player.from_config(player_config)
             players.append(player)
