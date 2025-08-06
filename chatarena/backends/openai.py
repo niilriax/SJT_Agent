@@ -107,23 +107,37 @@ class OpenAIChat(IntelligenceBackend):
         for q in reflection_questions:
             reflection_prompt += f"- {q.content}\n"
         reflection_prompt += "\n请逐条作答。"
-        max_rounds = 3
+        max_rounds = 1
         round_records = []
         current_answer = None
+        
+        # 如果反思轮数为0，直接返回初步答案
+        if max_rounds == 0:
+            request = [system_prompt] + conversations + [{"role": "user", "content": "请根据以上信息，给出你的回答。"}]
+            current_answer = self._get_response(request)
+            current_answer = re.sub(rf"{END_OF_MESSAGE}$", "", current_answer).strip()
+            # 格式化输出：原始答案
+            formatted_answer = f"【原始答案】\n{current_answer}"
+            return formatted_answer, round_records
+        
+        # 存储原始答案
+        original_answer = None
+        
         for i in range(max_rounds):
             if i == 0:
                 request = [system_prompt] + conversations + [{"role": "user", "content": "请根据以上信息，给出你的回答。"}]
                 current_answer = self._get_response(request)
                 current_answer = re.sub(rf"{END_OF_MESSAGE}$", "", current_answer).strip()
+                original_answer = current_answer  # 保存原始答案
             # 2. 反思
             reflection_request = [system_prompt] + conversations
             reflection_request.append({"role": "assistant", "content": current_answer + END_OF_MESSAGE})
             reflection_request.append({"role": "user", "content": reflection_prompt})
             # 保存原温度，临时调高
-            original_temperature = self.temperature
-            self.temperature = 0.7
+            #original_temperature = self.temperature
+            #self.temperature = 0.7
             reflection = self._get_response(reflection_request)
-            self.temperature = original_temperature
+            #self.temperature = original_temperature
             reflection = re.sub(rf"{END_OF_MESSAGE}$", "", reflection).strip()
             # 3. 直接修正（不再判断是否需要修正）
             revise_prompt = (

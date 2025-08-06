@@ -190,29 +190,98 @@ class QuestionPool():
     def _initial_questions(self):
         # SJT特质分析专家反思问题
         questions = [
-            Question(content="识别出的特质是否准确？", turn=0, visible_to="Player 1", reward=0),
+            Question(content="识别出的特质是否准确？为什么准确？给出理由", turn=0, visible_to="Player 1", reward=0),
             Question(content="是否遗漏了重要的行为倾向？", turn=0, visible_to="Player 1", reward=0),
             Question(content="你必须基于评分中发现的问题，明确提出两条可以优化的地方。每条建议需包括：1. 存在的问题是什么；2. 为什么会影响测验题目质量；3. 如何具体修改或提升。？", turn=0, visible_to="Player 1", reward=0),
         ]
         # SJT情景构建专家反思问题
         questions += [
-            Question(content="构建的情景是否符合特质分析的要求？", turn=0, visible_to="Player 2", reward=0),
-            Question(content="情景是否具有典型性？", turn=0, visible_to="Player 2", reward=0),
-            Question(content="你必须基于评分中发现的问题，明确提出两条可以优化的地方。每条建议需包括：1. 存在的问题是什么；2. 为什么会影响测验题目质量；3. 如何具体修改或提升。？", turn=0, visible_to="Player 2", reward=0),
+            Question(
+                content=(
+                    "请你逐步判断构建的情景是否能够有效体现所要分析的特质：\n"
+                    "Step 1：生成情景中意图测量的目标特质是什么；\n"
+                    "Step 2：分析情景中包含的关键行为或决策线索；\n"
+                    "Step 3：判断这些线索是否与目标特质高度相关，并说明理由。"
+                ),
+                turn=0,
+                visible_to="Player 2",
+                reward=0
+            ),
+            Question(
+                content=(
+                    "请你逐步评估情景是否具有典型性，能够代表目标特质在现实生活中的常见表现：\n"
+                    "Step 1：分析情景是否贴近实际、具体清晰，为什么；\n"
+                    "Step 2：判断该情境是否具有代表性，能否覆盖该特质在常见情境下的典型行为反应；\n"
+                    "Step 3：若不具典型性，请指出原因并简述可能的改进方向。"
+                ),
+                turn=0,
+                visible_to="Player 2",
+                reward=0
+            ),
+            Question(
+                content=(
+                    "请你基于前面发现的问题，提出两条具体的优化建议。每条建议需包括以下三部分：\n"
+                    "Step 1：指出当前存在的具体问题；\n"
+                    "Step 2：说明该问题为何会降低测验题目的质量（例如可理解性、有效性、现实贴合度等）；\n"
+                    "Step 3：提出清晰具体的修改或优化方式。"
+                ),
+                turn=0,
+                visible_to="Player 2",
+                reward=0
+            ),
         ]
         # SJT选项匹配专家反思问题
         questions += [
-            Question(content="选项是否与情景匹配，构成测量特质解析专家构念的同一问题空间？", turn=0, visible_to="Player 3", reward=0),
-            Question(content="选项的梯度分布是否合理？", turn=0, visible_to="Player 3", reward=0),
-            Question(content="是否存在明显的正确答案，是否具有足够的区分度？", turn=0, visible_to="Player 3", reward=0),
-            Question(content="你必须基于反思中发现的问题，明确提出两条可以优化的地方。每条建议需包括：1. 存在的问题是什么；2. 为什么会影响测验题目质量；3. 如何具体修改或提升。？", turn=0, visible_to="Player 3", reward=0),
+            Question(
+                content=(
+                    "请你逐步判断每道题目的选项与情景是否匹配，能否构成完整的问题空间：\n"
+                    "Step 1：特质与选项结合后所测量的心理特质是什么，为什么这么推测，理由是什么？；\n"
+                    "Step 2：是否存在测量其他特质的可能性？如果不存在，说明理由；"
+                ),
+                turn=0,
+                visible_to="Player 3",
+                reward=0
+            ),
+            Question(
+                content=(
+                    "请你评估每个题目选项的梯度分布是否合理，是否能够体现行为强度或特质倾向的递进：\n"
+                    "Step 1：梳理每个选项所体现的行为水平或心理倾向的强弱；\n"
+                    "Step 2：判断选项之间是否呈现出清晰的梯度（从弱到强/从低到高）；\n"
+                    "Step 3：指出是否存在梯度模糊或分布不均的问题，并说明可能的影响。"
+                ),
+                turn=0,
+                visible_to="Player 3",
+                reward=0
+            ),
+            Question(
+                content=(
+                    "请你分析选项中是否存在明显的正确答案，以及整体是否具有足够的区分度：\n"
+                    "Step 1：检查是否有某一选项在道德性、逻辑或社会接受度上明显优于其他选项；\n"
+                    "Step 2：判断选项之间是否能够真实反映不同水平的特质表达，而非倾向性过强或差异过小；\n"
+                    "Step 3：指出是否影响受试者分化，并说明其对测验效果的潜在影响。"
+                ),
+                turn=0,
+                visible_to="Player 3",
+                reward=0
+            ),
+            Question(
+                content=(
+                    "请你基于上述反思中发现的问题，提出两条具体的优化建议。每条建议应包含以下三步：\n"
+                    "Step 1：明确指出当前存在的问题；\n"
+                    "Step 2：解释该问题会如何影响题目的区分度、信效度或测量一致性；\n"
+                    "Step 3：提出具体、可实施的修改建议。"
+                ),
+                turn=0,
+                visible_to="Player 3",
+                reward=0
+            ),
         ]
+
         # SJT协作反思问题
-        questions += [
-            Question(content="我的输出是否与整个心理构念保持一致？", turn=0, visible_to="Moderator", reward=0),
-            Question(content="我是否有效地建设和完善了我的的工作？", turn=0, visible_to="Moderator", reward=0),
-            Question(content="整体的SJT题目质量是否达到预期？", turn=0, visible_to="Moderator", reward=0),
-        ]
+       # questions += [
+        #    Question(content="我的输出是否与整个心理构念保持一致？", turn=0, visible_to="Moderator", reward=0),
+        ##    Question(content="整体的SJT题目质量是否达到预期？", turn=0, visible_to="Moderator", reward=0),
+        #]
 
         return questions
 

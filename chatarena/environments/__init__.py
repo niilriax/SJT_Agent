@@ -1,6 +1,5 @@
 from ..config import EnvironmentConfig
 from .base import ENV_REGISTRY, Environment, TimeStep, register_env
-from .conversation import Conversation, ModeratedConversation
 from .sjt import SJT_env
 
 
